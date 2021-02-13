@@ -44,6 +44,7 @@ t_node *create_node (char valor) {
 t_node *monta_arvore(char *expr, int *i){
 
 	t_node *tree;
+	tree = NULL;
 	if (expr[*i] == '(') {
 		(*i)++;
 		printf("Criando nó %c\n", expr[*i]);
@@ -58,10 +59,11 @@ t_node *monta_arvore(char *expr, int *i){
 }
 void posordem(t_node *no){
     if (no != NULL){    
-        printf ("%c ", no->key);
         posordem(no->left);        
+        printf ("%c ", no->key);
         posordem(no->right);
     }
+	printf ("\n");
 }
 int main () {
 
@@ -76,8 +78,10 @@ int main () {
 	fgets (expressao, MAX, stdin);
 
 	raiz = monta_arvore(expressao, &i);
-	posordem (raiz);
+	posordem (raiz->left);
+	posordem (raiz->right);
 	//avalia_expressao (raiz, numero);
 	
 	return 0;
 }
+//(*(-(5)(+(3)(7)))(*(7)(/(2)(+(3)(4)))))
