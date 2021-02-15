@@ -40,7 +40,6 @@ t_node *create_node (char valor) {
 	return new;
 
 }
-
 t_node *monta_arvore(char *expr, int *i){
 
 	t_node *tree;
@@ -65,23 +64,54 @@ void posordem(t_node *no){
     }
 	printf ("\n");
 }
+int avalia_expressao (t_node* raiz) {
+
+	int r_valor, l_valor;
+
+	if (raiz == NULL)
+		return 0;
+
+	if (!raiz->left && !raiz->right)
+		return raiz->key - '0';
+	
+	l_valor = avalia_expressao (raiz->left);
+	r_valor = avalia_expressao (raiz->right);
+
+	if (raiz->key == '+')
+		return l_valor + r_valor;
+
+	if (raiz->key == '-')
+		return l_valor - r_valor;
+		
+	if (raiz->key == '*')
+		return l_valor * r_valor;
+		
+	if (raiz->key == '/') {
+		if (r_valor == 0) {
+			printf ("Valor inválidoo, divisão por 0, encerrando programa\n");
+			exit (1);
+		}
+		return l_valor / r_valor;
+	}
+
+}
 int main () {
 
-	int *numero, i;
+	int resultado, i;
 	char *expressao;
-	t_node *raiz, *t;
+	t_node *arvore;
 
 	i = 0;
 	expressao = allocate_men (MAX);
-	numero = allocate_menI (MAX);
+	//numero = allocate_menI (MAX);
 
 	fgets (expressao, MAX, stdin);
 
-	raiz = monta_arvore(expressao, &i);
-	posordem (raiz->left);
-	posordem (raiz->right);
-	//avalia_expressao (raiz, numero);
-	
+	arvore = monta_arvore(expressao, &i);
+	resultado = avalia_expressao (arvore);
+
+	printf ("Resultado = %d\n", resultado);
+
 	return 0;
 }
 //(*(-(5)(+(3)(7)))(*(7)(/(2)(+(3)(4)))))
