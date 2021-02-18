@@ -8,3 +8,11 @@
 (/(-(4)(/(2)(0))(*(7)(0)))) == Número inválido
 (/(2)(2)) == 1
 colocar mais expressoes aqui yeye
+trabalho: lista.o trabalho.o 
+		gcc -g -Wall trabalho.o lista.o -lm -o trabalho
+
+trabalho.o: lista.h trabalho.c
+		gcc -Wall -g -c trabalho.c
+
+lista.o: lista.c lista.h
+		gcc -Wall -g -c lista.c

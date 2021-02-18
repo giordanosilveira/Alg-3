@@ -1,8 +1,21 @@
-trabalho: lista.o trabalho.o 
-		gcc -g -Wall trabalho.o lista.o -lm -o trabalho
+CFLAGS = -Wall -g #gerar "warnings" detalhados e infos de depuração
 
-trabalho.o: lista.h trabalho.c
-		gcc -Wall -g -c trabalho.c
+objs = trabalho.o lista.o
 
+#regra default (primeira regra)
+all: trabalho
+
+#regras de ligação
+trabalho: $(objs)
+
+#regras de compilação
+trabalho.o: trabalho.c lista.h
 lista.o: lista.c lista.h
-		gcc -Wall -g -c lista.c
+
+#remove arquivos temporários
+clean:
+		-rm -f $(objs) *~
+
+#remove tudo o que não for o código fonte
+purge: clean
+		-rm -f trabalho
