@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include "lista.h"
+
 #define MAX 100
 
 
@@ -133,19 +135,69 @@ long avalia_expressao (t_node* raiz) {
 	}
 
 }
+int analiza_parenteses(char *expr, t_lista *lista){
+
+	char lixo;
+	int i, tam;
+	i = 0;
+
+	tam = strlen (expr);
+	for (i = 0; i < tam; i++){
+		if (expr[i] == '('){
+			if (! insere_fim_lista (expr[i], lista)) {
+				printf ("Os parenteses estão mal colocados\n");
+				printf ("Não foi possível adicionar o elemento a lista\n");
+				exit (1);
+			}
+		}
+		else if (expr[i] == ')'){
+			if (! remove_ultimo_lista(&lixo, lista)) {
+				printf ("Os parenteses estão mal colocados\n");
+				printf ("Não foi possível remover os elemento da lista\n");
+				exit (1);
+			}
+		}
+	}
+
+	if (!lista_vazia (lista)) {
+		return 0;
+	}
+
+	return 1;
+}
+void destroi_arvore (t_node* no) {
+	if (no != NULL) {
+		destroi_arvore (no->left);
+		destroi_arvore (no->right);
+		free (no->key);
+		free (no);
+	}
+}
 int main () {
 
+	t_lista *lista;
 	long resultado;
 	char *expressao;
 	t_node *arvore;
 
 	int i = 0;
 
+	lista = (t_lista*)malloc(sizeof(t_lista));
+	if (! cria_lista(lista)){
+		exit (1);
+	}
+
     //Aloca espaço na memória para o vetor da expressão
 	expressao = allocate_men (MAX);
 	
     //Lê a expressão de parenteses alinhados do teclado
 	fgets (expressao, MAX, stdin);
+
+	//Analizador de parênteses
+	if (! analiza_parenteses(expressao,lista)){
+		printf ("Os parenteses estão mal colocados\n");
+		exit (1);
+	}
 
     //monta a árvore
 	arvore = monta_arvore(expressao, &i);
@@ -155,6 +207,11 @@ int main () {
 	resultado = avalia_expressao (arvore);
 
 	printf ("Resultado = %ld\n", resultado);
+
+	destroi_arvore(arvore);
+	destroi_lista (lista);
+	free(expressao);
+	free(lista);
 
 	return 0;
 }
