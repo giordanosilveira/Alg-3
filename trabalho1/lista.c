@@ -29,7 +29,7 @@ void destroi_lista(t_lista *l) {
 		l->tam = 0;
 		l->ini = NULL;
 	}
-	printf ("Não destruida: lista vazia\n");
+	//printf ("Não destruida: lista vazia\n");
 }
 
 int insere_inicio_lista(char x, t_lista *l) {
