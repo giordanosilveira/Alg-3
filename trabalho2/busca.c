@@ -51,6 +51,14 @@ t_nodeB *create_nodeB (int numero) {
 	return new;
 
 }
+int soma_arvore (t_nodeB *node) {
+
+    if (node == NULL)
+        return 0;
+    
+    return (node->chave + soma_arvore(node->left) + soma_arvore(node->right));
+    
+}
 t_nodeA *busca (t_nodeA *node,int valor) {
 
     int soma;
@@ -70,10 +78,7 @@ t_nodeA *busca (t_nodeA *node,int valor) {
 t_nodeB *monta_arvoreB (char *expr, int *i){
 
     int j, tam;
-    char *num;
-
-    //Espaço para o vetor auxiliar que vai receber os números e as operações
-    num = allocate_men (MAX);
+    char num[MAX];
 
 	t_nodeB *tree;
 	tree = NULL;
@@ -95,32 +100,25 @@ t_nodeB *monta_arvoreB (char *expr, int *i){
         num[j] = '\0';
 
         tam = strlen (num);
+        //printf ("%c %d\n", expr[*i], *i);
         if (tam) {
             //Mostra qual nó vai ser criado e cria esse nó
             long key;
             char *ptr;
 
-		    printf("Criando nó %s\n", num);
+		    //printf("Criando nó %s\n", num);
             key = strtol (num, &ptr, 10);
 
-		    tree = create_node (key);
+		    tree = create_nodeB (key);
+            tree->left = monta_arvoreB(expr,i);
+            tree->right = monta_arvoreB(expr,i);
+            (*i)++;
         }
 
         //Monta primeiramente a árvore da esquerda e depois a direita
-		tree->left = monta_arvore(expr,i);
-		tree->right = monta_arvore(expr,i);
-		(*i)++;
 	}
 	return tree;
 	
-}
-int soma_arvore (t_nodeB *node) {
-
-    if (node == NULL)
-        return 0;
-    
-    return (node->chave + soma_arvore(node->left) + soma_arvore(node->right));
-    
 }
 void destroiArvoreB(t_nodeB *node) {
 
@@ -169,9 +167,9 @@ t_nodeA* inserir (t_nodeA* treeA, t_nodeB *chave) {
 void ajustaNoPai (t_nodeA *node, t_nodeA *new) {
     if (node->p != NULL) {
         if (node->p->left == node)
-            node->p->left == new;
+            node->p->left = new;
         else
-            node->p->right == new;
+            node->p->right = new;
         if (new != NULL)
             new->p = node->p;
     }
@@ -198,19 +196,24 @@ t_nodeA* sucessor (t_nodeA*node) {
     return s;
 
 }
-t_nodeA* remove (t_nodeA *node, t_nodeA* root) {
+t_nodeA* remover (t_nodeA *node, t_nodeA* root) {
 
     t_nodeA *s, *newroot = root;
     if (node->left == NULL){
+        printf ("esquerda\n");
+        if (node->right == NULL)
+            printf ("caqui\n");
         ajustaNoPai (node, node->right);
         free (node);
     }
     else {
         if (node->right == NULL) {
+            printf ("direita\n");
             ajustaNoPai (node, node->left);
             free (node);
         }
         else {
+            printf ("nenhum\n");
             s = sucessor (node);
             ajustaNoPai (s, s->right);
             s->left = node->left;
@@ -225,29 +228,32 @@ t_nodeA* remove (t_nodeA *node, t_nodeA* root) {
 }
 void imprimir_arvoreB (t_nodeB *treeB) {
 
-    if (treeB == NULL) {
+    if (treeB != NULL) {
         printf ("(");
         printf ("%d", treeB->chave);
         imprimir_arvoreB (treeB->left);
         imprimir_arvoreB (treeB->right);
         printf (")");
     }
-    printf ("\n");
 }
 void imprimir_arvoreA (t_nodeA *treeA) {
 
     if (treeA == NULL) {
-        printf ("[\n");
+        printf ("\n[");
+        printf ("\n]");
+    }
+    if (treeA != NULL) {
+        printf ("\n[");
         imprimir_arvoreB(treeA->chave);
         imprimir_arvoreA (treeA->left);
         imprimir_arvoreA (treeA->right);
-        printf ("]\n");
+        printf ("\n]");
     }
 
 }
 void destroiArvoreA (t_nodeA *treeA) {
 
-    if (treeA == NULL) {
+    if (treeA != NULL) {
         destroiArvoreA (treeA->left);
         destroiArvoreA (treeA->right);
         destroiArvoreB (treeA->chave);
@@ -270,45 +276,53 @@ int main () {
 
     arquivo = fopen (nomearquivo, "r");
 
-    while (fgets (palavra,MAX,arquivo)) {
+    while (fgets (palavra,MAX,stdin)) {
         comando = trata_comando (palavra);
         if (comando == 'i'){
             int i = 0;
-            //treeB = monta_arvoreB (palavra,&i);
-            //treeA = inserir (treeA,treeB)
-            //imprime_arvoreA (treeA);
+            t_nodeB* treeB;
+            treeB = monta_arvoreB (palavra,&i);
+            treeA = inserir (treeA,treeB);
+            imprimir_arvoreA (treeA);
+            printf ("\n");
         }
         else if (comando == 'b'){
             int valor, i = 0;
             t_nodeB*lixo;
             t_nodeA*resultado;
-            /*lixo = monta_arvoreB (palavra, &i);
+            lixo = monta_arvoreB (palavra, &i);
             valor = soma_arvore (lixo);
             resultado = busca(treeA, valor);
-            if (resultado == NULL)
+            if (resultado == NULL) {
                 printf ("valor não encontrado\n");
-            else {
-                print ("Valor encontrado\n");
-                imprime_arvoreB (resultado->chave); 
             }
-            imprime_arvoreA(treeA);
-            destroiArvoreB (lixo); */
+            else {
+                printf ("Valor encontrado\n");
+                imprimir_arvoreB (resultado->chave); 
+            }
+            imprimir_arvoreA(treeA);
+            destroiArvoreB (lixo); 
         }
         else if (comando == 'r') {
-            /*
-            t_nodeB *lixo;
+            printf ("Exclusão\n");
+            t_nodeB *lixo = NULL;
             t_nodeA *resultado;
             int i = 0, soma;
             lixo = monta_arvoreB (palavra, &i);
-            valor = soma_arvore (lixo);
-            resultado = busca (treeA, valor);
+            soma = soma_arvore (lixo);
+            resultado = busca (treeA, soma);
+
+            printf ("\n");
+            imprimir_arvoreB (resultado->chave);
+            printf ("\n");
+
             if (resultado == NULL) {
                 printf ("Valor não encontrado\n");
             }
             else 
-                treeA = remove (resultado, treeA);
+                treeA = remover (resultado, treeA);
             destroiArvoreB (lixo);
-            imprime_arvoreA(treeA);*/
+            imprimir_arvoreA(treeA);
         }
         else {
             printf ("Opção não encontrada: encerrando o programa\n");
@@ -316,7 +330,7 @@ int main () {
         }    
     }
 
-    //destroiArvoreA (treeA);
+    destroiArvoreA (treeA);
     fclose (arquivo);
     free (palavra);
     free (nomearquivo);    
