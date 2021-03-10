@@ -152,24 +152,40 @@ t_nodeA* inserir (t_nodeA* treeA, t_nodeB *chave) {
     somaChave = soma_arvore (chave);
     somaA = soma_arvore (treeA->chave);
 
-    if (somaChave > somaA) {
-        treeA->right = inserir (treeA->right, chave);
-        treeA->right->p = treeA;
-    }
-    else {
+    if (somaChave < somaA) {
         treeA->left = inserir (treeA->left, chave);
         treeA->left->p = treeA;
+    }
+    else {
+        treeA->right = inserir (treeA->right, chave);
+        treeA->right->p = treeA;
     }
 
     return treeA;
 
 }
+void imprimir_arvoreB (t_nodeB *treeB) {
+
+    if (treeB != NULL) {
+        printf ("(");
+        printf ("%d", treeB->chave);
+        imprimir_arvoreB (treeB->left);
+        imprimir_arvoreB (treeB->right);
+        printf (")");
+    }
+}
 void ajustaNoPai (t_nodeA *node, t_nodeA *new) {
     if (node->p != NULL) {
-        if (node->p->left == node)
+        if (node->p->left == node){
+            imprimir_arvoreB (node->p->chave);
+            printf ("\npeixe\n");
             node->p->left = new;
-        else
+        }
+        else {
+            imprimir_arvoreB (node->p->chave);
+            printf ("\nué\n");
             node->p->right = new;
+        }
         if (new != NULL)
             new->p = node->p;
     }
@@ -225,16 +241,6 @@ t_nodeA* remover (t_nodeA *node, t_nodeA* root) {
         }
     }
     return newroot;
-}
-void imprimir_arvoreB (t_nodeB *treeB) {
-
-    if (treeB != NULL) {
-        printf ("(");
-        printf ("%d", treeB->chave);
-        imprimir_arvoreB (treeB->left);
-        imprimir_arvoreB (treeB->right);
-        printf (")");
-    }
 }
 void imprimir_arvoreA (t_nodeA *treeA) {
 
