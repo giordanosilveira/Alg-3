@@ -15,15 +15,18 @@ struct t_nodeA {
 };
 typedef struct t_nodeA t_nodeA;
 
+//Cria um nodo do tipo A
 t_nodeA *create_nodeA (t_nodeB *chave) {
     t_nodeA *new;
 
+    //Abre espaço na memória e chega para ver se realemente abriu
     new = (t_nodeA*)malloc(sizeof(t_nodeA));
     if (!new) {
         perror ("Não foi possível alocar memória");
         exit (1);
     }
 
+    //Anula todos os ponteiros e inicializa a chave
     new->chave = chave;
     new->left = NULL;
     new->right = NULL;
@@ -31,6 +34,7 @@ t_nodeA *create_nodeA (t_nodeB *chave) {
 
     return new;
 }
+//Cria um nodo do tipo B
 t_nodeB *create_nodeB (int numero) {
 	
 	t_nodeB *new;
@@ -51,6 +55,7 @@ t_nodeB *create_nodeB (int numero) {
 	return new;
 
 }
+//Dado uma arvore em formato de parenteses alinhados, monta essa árvore e retorna o seu ponteiro
 t_nodeB *monta_arvoreB (char *expr, int *i){
 
     int j, tam;
@@ -75,8 +80,8 @@ t_nodeB *monta_arvoreB (char *expr, int *i){
         }
         num[j] = '\0';
 
+        //Teste que serve para resolver os parenteses vazios da árvore
         tam = strlen (num);
-        //printf ("%c %d\n", expr[*i], *i);
         if (tam) {
             //Mostra qual nó vai ser criado e cria esse nó
             long key;
@@ -85,29 +90,31 @@ t_nodeB *monta_arvoreB (char *expr, int *i){
 		    //printf("Criando nó %s\n", num);
             key = strtol (num, &ptr, 10);
 
+            //Monta primeiramente a árvore da esquerda e depois a direita
 		    tree = create_nodeB (key);
             tree->left = monta_arvoreB(expr,i);
             tree->right = monta_arvoreB(expr,i);
             (*i)++;
         }
 
-        //Monta primeiramente a árvore da esquerda e depois a direita
 	}
 	return tree;
 	
 }
+//Retira o comando da entrada e puxa a árvore para o começo da string
 char trata_comando (char *palavra) {
 
     int i;
     char a;
     a = palavra[0];
-    for (i = 2; palavra[i] != '\0'; i++) {
-        palavra[i - 2] = palavra[i];
+    for (i = 2; palavra[i] != '\0'; i++) {  //A árvore começa na casa 2 do vetor,
+        palavra[i - 2] = palavra[i];        //então puxa ela duas casa para traz
     }
     palavra[i] = '\0';
 
     return a;
 }
+//Soma a árvore b
 int soma_arvore (t_nodeB *node) {
 
     if (node == NULL)
@@ -116,21 +123,27 @@ int soma_arvore (t_nodeB *node) {
     return (node->chave + soma_arvore(node->left) + soma_arvore(node->right));
     
 }
+//Função que insere um nodo recursivamente na árvore
 t_nodeA* inserir (t_nodeA* treeA, t_nodeB *chave) {
 
     int somaA, somaChave;
+
+    //Testa para ver se o nodo é nulo, se for, cria um nodo
     if (treeA == NULL)
         return create_nodeA (chave);
     
+    //Soma da arvore B e A; vai servir de comparação para ver se eu vou para a esquerda ou para a direita
     somaChave = soma_arvore (chave);
     somaA = soma_arvore (treeA->chave);
 
+    //Se for menor, vai para a esquerda
     if (somaChave < somaA) {
         t_nodeA *node;
         node = inserir (treeA->left, chave);
         treeA->left = node;
         node->p = treeA; 
     }
+    //Senão vai para a direita
     else {
         t_nodeA *node_r;
         node_r = inserir (treeA->right, chave);
@@ -141,6 +154,7 @@ t_nodeA* inserir (t_nodeA* treeA, t_nodeB *chave) {
     return treeA;
 
 }
+//Destroi recurssivamente a árvore B
 void destroiArvoreB(t_nodeB *node) {
 
     if (node != NULL) {
@@ -152,6 +166,7 @@ void destroiArvoreB(t_nodeB *node) {
     }
 
 }
+//Imprime a árvore B, no formato de parênteses alinhados
 void imprimir_arvoreB (t_nodeB *treeB) {
 
     if (treeB != NULL) {
@@ -161,7 +176,9 @@ void imprimir_arvoreB (t_nodeB *treeB) {
         imprimir_arvoreB (treeB->right);
         printf (")");
     }
-}void imprimir_arvoreA (t_nodeA *treeA) {
+}
+//Imprime a árvore A, no formato de conchetes "nova linha"
+void imprimir_arvoreA (t_nodeA *treeA) {
 
     if (treeA == NULL) {
         printf ("\n[");
@@ -176,6 +193,7 @@ void imprimir_arvoreB (t_nodeB *treeB) {
     }
 
 }
+//Destroi a árvore A recurssivamente
 void destroiArvoreA (t_nodeA *treeA) {
 
     if (treeA != NULL) {
@@ -188,18 +206,24 @@ void destroiArvoreA (t_nodeA *treeA) {
     }
 
 }
+//Busca para ver se o valor é encontrado na árvore A
 t_nodeA *busca (t_nodeA *node,int valor) {
 
     int soma;
+    //Se for nulo o valor não existe, então retorna NULL
     if (node == NULL)
         return NULL;
 
+    //soma o nodo da árvore A - uma árvore B - e checa para ver se é igual
+    //se for retorta esse nodo
     soma = soma_arvore (node->chave);
     if (soma == valor)
         return node;
     
+    //Se o valore for menor que a soma, vai para a esquerda
     if (valor < soma)
         busca (node->left,valor);
+    //senão vai para a direita
     else
         busca (node->right,valor);
 
@@ -216,18 +240,25 @@ void ajustaNoPai (t_nodeA *node, t_nodeA *new) {
             new->p = node->p;
     }
 }
+//Função que acha o valor mínimo de um nó
 t_nodeA *min (t_nodeA *node) {
     if (node->left == NULL)
         return node;
     else
         min (node->left);
 }
+//Função que acha um sucessor de um nodo
 t_nodeA* sucessor (t_nodeA*node) {
 
     t_nodeA *s = NULL;
+    //Testa para ver se o nó dado tem filho a direita, se sim
+    //retorna o mínimo do seu filho a direita (sucessor)
     if (node->right != NULL) {
         return min(node->right);
     }
+
+    //Se ele não tiver filhos o sucessor vai ser algum nodo "acima" dele
+    //essa parte acha esse nodo
     else {
         s = node->p;
         while (s != NULL && node == s->right) {
