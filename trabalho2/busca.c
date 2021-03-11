@@ -51,30 +51,6 @@ t_nodeB *create_nodeB (int numero) {
 	return new;
 
 }
-int soma_arvore (t_nodeB *node) {
-
-    if (node == NULL)
-        return 0;
-    
-    return (node->chave + soma_arvore(node->left) + soma_arvore(node->right));
-    
-}
-t_nodeA *busca (t_nodeA *node,int valor) {
-
-    int soma;
-    if (node == NULL)
-        return NULL;
-
-    soma = soma_arvore (node->chave);
-    if (soma == valor)
-        return node;
-    
-    if (valor > soma)
-        busca (node->right,valor);
-    else
-        busca (node->left,valor);
-
-}
 t_nodeB *monta_arvoreB (char *expr, int *i){
 
     int j, tam;
@@ -120,17 +96,6 @@ t_nodeB *monta_arvoreB (char *expr, int *i){
 	return tree;
 	
 }
-void destroiArvoreB(t_nodeB *node) {
-
-    if (node != NULL) {
-        destroiArvoreB (node->left);
-        destroiArvoreB (node->right);
-        node->left = NULL;
-        node->right = NULL;
-        free (node);
-    }
-
-}
 char trata_comando (char *palavra) {
 
     int i;
@@ -143,6 +108,14 @@ char trata_comando (char *palavra) {
 
     return a;
 }
+int soma_arvore (t_nodeB *node) {
+
+    if (node == NULL)
+        return 0;
+    
+    return (node->chave + soma_arvore(node->left) + soma_arvore(node->right));
+    
+}
 t_nodeA* inserir (t_nodeA* treeA, t_nodeB *chave) {
 
     int somaA, somaChave;
@@ -153,15 +126,30 @@ t_nodeA* inserir (t_nodeA* treeA, t_nodeB *chave) {
     somaA = soma_arvore (treeA->chave);
 
     if (somaChave < somaA) {
-        treeA->left = inserir (treeA->left, chave);
-        treeA->left->p = treeA;
+        t_nodeA *node;
+        node = inserir (treeA->left, chave);
+        treeA->left = node;
+        node->p = treeA; 
     }
     else {
-        treeA->right = inserir (treeA->right, chave);
-        treeA->right->p = treeA;
+        t_nodeA *node_r;
+        node_r = inserir (treeA->right, chave);
+        treeA->right = node_r;
+        node_r->p = treeA;
     }
 
     return treeA;
+
+}
+void destroiArvoreB(t_nodeB *node) {
+
+    if (node != NULL) {
+        destroiArvoreB (node->left);
+        destroiArvoreB (node->right);
+        node->left = NULL;
+        node->right = NULL;
+        free (node);
+    }
 
 }
 void imprimir_arvoreB (t_nodeB *treeB) {
@@ -173,17 +161,55 @@ void imprimir_arvoreB (t_nodeB *treeB) {
         imprimir_arvoreB (treeB->right);
         printf (")");
     }
+}void imprimir_arvoreA (t_nodeA *treeA) {
+
+    if (treeA == NULL) {
+        printf ("\n[");
+        printf ("\n]");
+    }
+    if (treeA != NULL) {
+        printf ("\n[");
+        imprimir_arvoreB(treeA->chave);
+        imprimir_arvoreA (treeA->left);
+        imprimir_arvoreA (treeA->right);
+        printf ("\n]");
+    }
+
+}
+void destroiArvoreA (t_nodeA *treeA) {
+
+    if (treeA != NULL) {
+        destroiArvoreA (treeA->left);
+        destroiArvoreA (treeA->right);
+        destroiArvoreB (treeA->chave);
+        treeA->left = NULL;
+        treeA->right = NULL;
+        free (treeA);
+    }
+
+}
+t_nodeA *busca (t_nodeA *node,int valor) {
+
+    int soma;
+    if (node == NULL)
+        return NULL;
+
+    soma = soma_arvore (node->chave);
+    if (soma == valor)
+        return node;
+    
+    if (valor < soma)
+        busca (node->left,valor);
+    else
+        busca (node->right,valor);
+
 }
 void ajustaNoPai (t_nodeA *node, t_nodeA *new) {
     if (node->p != NULL) {
         if (node->p->left == node){
-            imprimir_arvoreB (node->p->chave);
-            printf ("\npeixe\n");
             node->p->left = new;
         }
         else {
-            imprimir_arvoreB (node->p->chave);
-            printf ("\nué\n");
             node->p->right = new;
         }
         if (new != NULL)
@@ -216,58 +242,32 @@ t_nodeA* remover (t_nodeA *node, t_nodeA* root) {
 
     t_nodeA *s, *newroot = root;
     if (node->left == NULL){
-        printf ("esquerda\n");
-        if (node->right == NULL)
-            printf ("caqui\n");
         ajustaNoPai (node, node->right);
+        if (node->right != NULL)
+            node->right->p = node->p;
         free (node);
     }
     else {
         if (node->right == NULL) {
-            printf ("direita\n");
             ajustaNoPai (node, node->left);
+            node->left->p = node->p;
             free (node);
         }
         else {
-            printf ("nenhum\n");
             s = sucessor (node);
             ajustaNoPai (s, s->right);
             s->left = node->left;
             s->right = node->right;
+            node->left->p = s;  
             ajustaNoPai (node, s);
-            if (node == root)
+            if (node == root) {
+                s->p = NULL;
                 newroot = s;
+            }
             free (node);   
         }
     }
     return newroot;
-}
-void imprimir_arvoreA (t_nodeA *treeA) {
-
-    if (treeA == NULL) {
-        printf ("\n[");
-        printf ("\n]");
-    }
-    if (treeA != NULL) {
-        printf ("\n[");
-        imprimir_arvoreB(treeA->chave);
-        imprimir_arvoreA (treeA->left);
-        imprimir_arvoreA (treeA->right);
-        printf ("\n]");
-    }
-
-}
-void destroiArvoreA (t_nodeA *treeA) {
-
-    if (treeA != NULL) {
-        destroiArvoreA (treeA->left);
-        destroiArvoreA (treeA->right);
-        destroiArvoreB (treeA->chave);
-        treeA->left = NULL;
-        treeA->right = NULL;
-        free (treeA);
-    }
-
 }
 int main () {
 

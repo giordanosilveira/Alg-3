@@ -204,12 +204,80 @@ t_nodeA *busca (t_nodeA *node,int valor) {
         busca (node->right,valor);
 
 }
+void ajustaNoPai (t_nodeA *node, t_nodeA *new) {
+    if (node->p != NULL) {
+        printf ("\n");
+        imprimir_arvoreB (node->p->chave);
+        printf ("\n");
+        if (node->p->left == node){
+            printf ("meu deus\n");
+            node->p->left = new;
+        }
+        else {
+            node->p->right = new;
+        }
+        if (new != NULL)
+            new->p = node->p;
+    }
+}
+t_nodeA *min (t_nodeA *node) {
+    if (node->left == NULL)
+        return node;
+    else
+        min (node->left);
+}
+t_nodeA* sucessor (t_nodeA*node) {
+
+    t_nodeA *s = NULL;
+    if (node->right != NULL) {
+        return min(node->right);
+    }
+    else {
+        s = node->p;
+        while (s != NULL && node == s->right) {
+            node = s;
+            s = s->p;
+        }
+    }
+    return s;
+
+}
+t_nodeA* remover (t_nodeA *node, t_nodeA* root) {
+
+    t_nodeA *s, *newroot = root;
+    if (node->left == NULL){
+        if (node->right == NULL)
+            printf ("escadinha\n");
+        ajustaNoPai (node, node->right);
+        free (node);
+    }
+    else {
+        if (node->right == NULL) {
+            ajustaNoPai (node, node->left);
+            free (node);
+        }
+        else {
+            printf ("caqui\n");
+            s = sucessor (node);
+            ajustaNoPai (s, s->right);
+            s->left = node->left;
+            s->right = node->right;
+            node->left->p = s;
+            printf ("antes\n");
+            ajustaNoPai (node, s);
+            if (node == root)
+                newroot = s;
+            free (node);   
+        }
+    }
+    return newroot;
+}
 int main () {
 
     t_nodeA* treeA;
     char arvore[100];
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 4; i++) {
         t_nodeB* treeB = NULL;
         int j = 0;
         fgets (arvore,100,stdin);
@@ -219,50 +287,96 @@ int main () {
         printf ("\n");
     }
 
-    t_nodeA *ret;
-    ret = busca (treeA,50);
+    t_nodeA *ret, *search;
+    ret = busca (treeA,48);
     imprimir_arvoreB (ret->chave);
     printf ("1\n");
+    /*if (ret != NULL) {
+        imprimir_arvoreB (ret->p->chave);
+        printf ("\n");
+    }*/
+
+    ret = NULL;
+    ret = busca (treeA,15);
+    imprimir_arvoreB (ret->chave);
+    printf ("2\n");
     if (ret != NULL) {
         imprimir_arvoreB (ret->p->chave);
         printf ("\n");
     }
 
     ret = NULL;
-    ret = busca (treeA,13);
-    imprimir_arvoreB (ret->chave);
-    printf ("2\n");
-    if (ret != NULL) {
-        imprimir_arvoreB (ret->p->p->right->chave);
-        printf ("\n");
-    }
-
-    ret = NULL;
-    ret = busca (treeA,24);
+    ret = busca (treeA,38);
     imprimir_arvoreB (ret->chave);
     printf ("3\n");
-    if (ret != NULL) {
+    /*if (ret != NULL) {
         imprimir_arvoreB (ret->p->left->chave);
         printf ("\n");
-    }
+    }*/
 
     ret = NULL;
-    ret = busca (treeA,50);
+    ret = busca (treeA,40);
     imprimir_arvoreB (ret->chave);
     printf ("4\n");
     if (ret != NULL) {
-        imprimir_arvoreB (ret->p->p->chave);
+        imprimir_arvoreB (ret->p->right->chave);
         printf ("\n");
     }
 
-    ret = NULL;
+    /*ret = NULL;
     ret = busca (treeA,48);
     imprimir_arvoreB (ret->chave);
     printf ("5\n");
     if (ret != NULL) {
         imprimir_arvoreB (ret->right->chave);
         printf ("\n");
+    }*/
+
+    ret = NULL;
+    printf ("Removendo o 38\n");
+    search = busca (treeA,38);
+    imprimir_arvoreB (search->chave);
+    treeA = remover (search,treeA);
+    imprimir_arvoreA (treeA);
+
+    ret = NULL;
+    ret = busca (treeA,40);
+    imprimir_arvoreB (ret->chave);
+    printf ("3\n");
+    if (ret != NULL) {
+        imprimir_arvoreB (ret->p->chave);
+        printf ("\n");
     }
+
+    ret = NULL;
+    ret = busca (treeA,15);
+    imprimir_arvoreB (ret->chave);
+    printf ("2\n");
+    if (ret != NULL) {
+        imprimir_arvoreB (ret->p->chave);
+        printf ("\n");
+    }
+
+    ret = NULL;
+    printf ("Removendo o 15\n");
+    search = busca (treeA,15);
+    imprimir_arvoreB (search->chave);
+    treeA = remover (search,treeA);
+    imprimir_arvoreA (treeA);
+
+    /*ret = NULL;
+    printf ("Removendo o 15\n");
+    search = busca (treeA,15);
+    imprimir_arvoreB (search->chave);
+    treeA = remover (search,treeA);
+    imprimir_arvoreA (treeA);
+
+    ret = NULL;
+    printf ("Removendo o 38\n");
+    search = busca (treeA,38);
+    imprimir_arvoreB (search->chave);
+    treeA = remover (search,treeA);
+    imprimir_arvoreA (treeA);*/
 
     destroiArvoreA (treeA);   
 
