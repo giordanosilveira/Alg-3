@@ -274,14 +274,11 @@ t_nodeA* remover (t_nodeA *node, t_nodeA* root) {
     t_nodeA *s, *newroot = root;
     if (node->left == NULL){
         ajustaNoPai (node, node->right);
-        if (node->right != NULL)
-            node->right->p = node->p;
         free (node);
     }
     else {
         if (node->right == NULL) {
             ajustaNoPai (node, node->left);
-            node->left->p = node->p;
             free (node);
         }
         else {
@@ -289,7 +286,10 @@ t_nodeA* remover (t_nodeA *node, t_nodeA* root) {
             ajustaNoPai (s, s->right);
             s->left = node->left;
             s->right = node->right;
-            node->left->p = s;  
+            if (s->right != NULL)
+                s->right->p = s;
+            if (s->left != NULL)
+                s->left->p = s;  
             ajustaNoPai (node, s);
             if (node == root) {
                 s->p = NULL;
@@ -313,7 +313,7 @@ int main () {
 
     arquivo = fopen (nomearquivo, "r");
 
-    while (fgets (palavra,MAX,stdin)) {
+    while (fgets (palavra,MAX,arquivo)) {
         comando = trata_comando (palavra);
         if (comando == 'i'){
             int i = 0;
@@ -366,16 +366,7 @@ int main () {
             exit (1);
         }    
     }
-
-    /*t_nodeA *ret;
-    ret = NULL;
-    ret = busca (treeA,40);
-    if (ret != NULL) {
-        imprimir_arvoreB (ret->right->chave);
-        printf ("\n");
-        imprimir_arvoreB (ret->p->chave);
-        printf ("\n");
-    }*/
+    
     destroiArvoreA (treeA);
     fclose (arquivo);
     free (palavra);
