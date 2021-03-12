@@ -45,7 +45,7 @@ int main () {
             destroiArvoreB (lixo); 
         }
         else if (comando == 'r') {
-            printf ("Exclusão\n");
+            printf ("\nExclusão\n");
             t_nodeB *lixo = NULL;
             t_nodeA *resultado;
             int i = 0, soma;
@@ -70,7 +70,6 @@ int main () {
             exit (1);
         }    
     }
-    
     destroiArvoreA (treeA);
     fclose (arquivo);
     free (palavra);
