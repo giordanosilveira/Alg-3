@@ -6,6 +6,7 @@
 
 int main () {
 
+    int i, soma;
     char *nomearquivo, comando, *palavra;
     t_nodeA *treeA = NULL;
 
@@ -20,53 +21,68 @@ int main () {
     while (fgets (palavra,MAX,arquivo)) {
         comando = trata_comando (palavra);
         if (comando == 'i'){
-            int i = 0;
+            i = 0;
             t_nodeB* treeB;
+            
+            printf ("\nIncluindo\n");
             treeB = monta_arvoreB (palavra,&i);
+            soma = soma_arvore (treeB);
+            printf ("Criando nodo %d: ", soma);
+            imprimir_arvoreB (treeB);
+            printf ("\n");
+
             treeA = inserir (treeA,treeB);
             imprimir_arvoreA (treeA);
+
             printf ("\n");
         }
         else if (comando == 'b'){
-            int valor, i = 0;
             t_nodeB*lixo;
             t_nodeA*resultado;
+
+            i = 0;
             lixo = monta_arvoreB (palavra, &i);
-            valor = soma_arvore (lixo);
-            resultado = busca(treeA, valor);
+            soma = soma_arvore (lixo);
+            printf ("\nBuscando o valor %d: ", soma);
+            imprimir_arvoreB (lixo);
+            printf ("\n");
+            resultado = busca(treeA, soma);
+
             if (resultado == NULL) {
-                printf ("valor não encontrado\n");
+                printf ("\nValor não encontrado\n");
             }
             else {
-                printf ("Valor encontrado\n");
-                imprimir_arvoreB (resultado->chave); 
+                printf ("\nValor encontrado %d: ", soma);
+                imprimir_arvoreB (resultado->chave);
+                printf ("\n"); 
             }
+
             imprimir_arvoreA(treeA);
             destroiArvoreB (lixo); 
         }
         else if (comando == 'r') {
-            printf ("\nExclusão\n");
             t_nodeB *lixo = NULL;
             t_nodeA *resultado;
-            int i = 0, soma;
+            i = 0;
+            
             lixo = monta_arvoreB (palavra, &i);
             soma = soma_arvore (lixo);
+            printf ("\nExcluindo o valor %d: ", soma);
+            imprimir_arvoreB (lixo);
+            printf ("\n");
             resultado = busca (treeA, soma);
 
-            printf ("\n");
-            imprimir_arvoreB (resultado->chave);
-            printf ("\n");
-
             if (resultado == NULL) {
-                printf ("Valor não encontrado\n");
+                printf ("\nValor não encontrado\n");
             }
-            else 
+            else {
                 treeA = remover (resultado, treeA);
+            }
             destroiArvoreB (lixo);
             imprimir_arvoreA(treeA);
         }
         else {
-            printf ("Opção não encontrada: encerrando o programa\n");
+            printf ("\nOpção não encontrada: encerrando o programa\n");
             exit (1);
         }    
     }
