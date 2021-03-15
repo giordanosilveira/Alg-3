@@ -34,9 +34,11 @@ t_nodeA *busca (t_nodeA *node,int valor);
 void ajustaNoPai (t_nodeA *nodo, t_nodeA *);
 
 //Função que acha o valor mínimo de um nó
+//retorna o nodo mínimo
 t_nodeA *min (t_nodeA *node);
 
 //Função que acha um sucessor de um nodo
+//retorna o nodo sucessor
 t_nodeA* sucessor (t_nodeA*node);
 
 //Remove um nodo dado e atualiza a raiz se precisar

@@ -81,10 +81,9 @@ char trata_comando (char *palavra) {
 
     return a;
 }
-//Soma a árvore b
 int soma_arvore (t_nodeB *node) {
 
-    if (node == NULL)
+    if (node == NULL)               //Soma o nodo pai com seus filhos recursivamente
         return 0;
     
     return (node->chave + soma_arvore(node->left) + soma_arvore(node->right));

@@ -54,8 +54,8 @@ void imprimir_arvoreA (t_nodeA *treeA) {
 
     //Se o nodo for nulo abre e fecha um conchete vazio
     if (treeA == NULL) {
-        printf ("\n[");
-        printf ("\n]");
+        printf ("\n[NULL");
+        printf ("]");
     }
     //Se não for nulo, abre um conchete, imprime a chave da árvore A
     //e em ordem segue esses passos pela árvore A
@@ -117,14 +117,13 @@ void ajustaNoPai (t_nodeA *node, t_nodeA *new) {
             new->p = node->p;
     }
 }
-//Função que acha o valor mínimo de um nó
 t_nodeA *min (t_nodeA *node) {
+    
     if (node->left == NULL)
         return node;
-    else
+    else                        //enquanto não for nulo o ponteiro da esquerda, continua indo para a esquerda
         min (node->left);
 }
-//Função que acha um sucessor de um nodo
 t_nodeA* sucessor (t_nodeA*node) {
 
     t_nodeA *s = NULL;
