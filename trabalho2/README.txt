@@ -20,7 +20,7 @@ nela o caso de parenteses vázios (EX: (25(10(5)())()) e números compostos de m
 -> Bibliotecas: eu separei as funções que usei em duas Bibliotecas diferente. A "libstA" que contem todas as funções
 da árvore A. E a "libstB" que contem todas as funções da árvore B.
 
-Haverá dois warnings na compilação. Mas ele ocorrem 
+Haverá dois warnings na compilação. Mas ele ocorrem devido a como eu retorno o valor de certas funções. 
 
 Para mais dúvidas, eu comentei todas minhas funções nas minhas duas bibliotecas. Acho que se eu explicasse aqui
 todas elas, esse arquivo ficaria muito extenso.
